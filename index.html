@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Que Tea Bubble Tea | Loyalty Rewards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', system-ui, sans-serif;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #ff66b2 0%, #ff3388 100%);
+            padding: 16px 12px;
+        }
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 32px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.25);
+            padding: 20px 16px;
+        }
+        .brand {
+            text-align: center;
+            margin-bottom: 24px;
+            border-bottom: 3px solid #ff99cc;
+            padding-bottom: 12px;
+        }
+        .brand h1 {
+            font-size: 1.85rem;
+            letter-spacing: 1px;
+            color: #c2185b;
+        }
+        .brand p {
+            color: #a13e6b;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: #fff0f5;
+            padding: 12px 16px;
+            border-radius: 40px;
+            margin-bottom: 20px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-weight: bold;
+            color: #b34180;
+            font-size: 0.85rem;
+        }
+        .stat-card span {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #e91e63;
+            margin-right: 6px;
+        }
+        .action-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .action-group button {
+            background: #2e7d32;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .flex-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+            background: #fff5f9;
+            padding: 16px;
+            border-radius: 32px;
+        }
+        .search-input-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .search-input-wrapper input {
+            flex: 2;
+            padding: 12px 16px;
+            border-radius: 60px;
+            border: 1px solid #ffb6d9;
+            font-size: 1rem;
+            min-height: 48px;
+        }
+        .search-input-wrapper input:focus {
+            outline: none;
+            border-color: #ff3388;
+            box-shadow: 0 0 0 3px rgba(255,51,136,0.2);
+        }
+        .new-customer-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .new-customer-form input {
+            flex: 1;
+            min-width: 130px;
+            padding: 12px 14px;
+            border-radius: 60px;
+            border: 1px solid #ffb6d9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 950px;
+        }
+        th, td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #ffdbeb;
+        }
+        th {
+            background: #ffd9e8;
+            color: #b52b6b;
+        }
+        tbody tr:nth-child(even) td {
+            background-color: #fff9fb;
+        }
+        .action-btns button {
+            border: none;
+            padding: 8px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            min-width: 42px;
+        }
+        .drink-plus { background: #2c6e2c; color: white; }
+        .redeem-btn { background: #6a1b9a; color: white; }
+        .edit-btn { background: #ff9800; color: white; }
+        .delete-btn { background: #d32f2f; color: white; }
+
+        .popup-bubble {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .popup-bubble.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .bubble-card {
+            background: white;
+            width: 90%;
+            max-width: 520px;
+            padding: 32px;
+            border-radius: 60px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .celebration-balloon {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: radial-gradient(circle at 30% 30%, #ffdd77, #ffaa22);
+            color: #b34180;
+            padding: 2rem 3rem;
+            border-radius: 200px 200px 200px 120px;
+            z-index: 2000;
+            font-weight: 900;
+            font-size: 1.85rem;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 0 14px rgba(255,255,255,0.7), 0 0 0 22px #ff66b2;
+            transition: transform 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+            border: 4px solid white;
+            cursor: pointer;
+        }
+        .celebration-balloon.show {
+            transform: translate(-50%, -50%) scale(1);
+            animation: bounceIn 0.6s ease-out, floatGlow 1.8s infinite alternate;
+        }
+        @keyframes bounceIn {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-12deg); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0); }
+        }
+        @keyframes floatGlow { 0% { box-shadow: 0 25px 50px rgba(0,0,0,0.35), 0 0 0 14px rgba(255,255,255,0.7), 0 0 0 22px #ff66b2; }
+            100% { box-shadow: 0 40px 70px rgba(0,0,0,0.5), 0 0 0 18px rgba(255,255,255,0.9), 0 0 0 28px #ff3388; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="brand">
+        <h1>🧋 Que Tea Bubble Tea 🎈</h1>
+        <p>5: Topping | 10: Half Price | 15: Topping | 20: FREE DRINK</p>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat-card">👥 <span id="totalCustCount">0</span></div>
+        <div class="stat-card">🧋 <span id="totalDrinksSum">0</span></div>
+        <div class="stat-card">🔄 <span id="totalBatchSum">0</span></div>
+        <div class="action-group">
+            <button id="backupDataBtn">📀 Backup</button>
+            <button id="exportCSVBtn">📊 CSV Export</button>
+            <button id="importDataBtn">📂 Import</button>
+            <input type="file" id="importFileInput" accept=".json" style="display: none;">
+        </div>
+    </div>
+
+    <div class="flex-panel">
+        <div class="search-input-wrapper">
+            <input type="text" id="searchInput" placeholder="🔍 Search by name, mobile, or notes..." autofocus>
+            <button id="clearSearchBtn">Clear</button>
+        </div>
+        <span id="searchResultStats" class="search-stats">📋 Loading...</span>
+
+        <div class="new-customer-form">
+            <input type="text" id="newName" placeholder="Name *">
+            <input type="tel" id="newMobile" placeholder="Mobile *">
+            <input type="email" id="newEmail" placeholder="Email (optional)">
+            <button id="addCustomerBtn">➕ Add Customer</button>
+        </div>
+    </div>
+
+    <div class="table-wrapper" style="overflow-x:auto; border-radius:28px; background:#ffffffcc;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>🍹 Cycle</th>
+                    <th>Batch</th>
+                    <th>Total</th>
+                    <th>Reward Status</th>
+                    <th>Last Visit</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="pagination-bar" id="paginationControls" style="margin:20px 0; text-align:center;"></div>
+    <div class="password-note" style="text-align:center; font-size:11px; color:#999; margin-top:12px;">
+        🔐 Delete password: <strong>queTea2025</strong>
+    </div>
+</div>
+
+<!-- EDIT POPUP -->
+<div id="editPopup" class="popup-bubble">
+    <div class="bubble-card">
+        <h3>✏️ Edit Customer</h3>
+        <input type="hidden" id="editCustId">
+        <input type="text" id="editName" placeholder="Name">
+        <input type="tel" id="editMobile" placeholder="Mobile">
+        <textarea id="editComment" rows="3" placeholder="Notes / History"></textarea>
+        <div style="display:flex; gap:10px; margin:12px 0;">
+            <input type="number" id="editCycleDrinks" placeholder="Cycle (0-20)" min="0" max="20" style="flex:1">
+            <input type="number" id="editBatchCount" placeholder="Batch" min="0" style="flex:1">
+        </div>
+        <button id="saveEditBtn" style="background:#2e7d32; color:white; width:100%; padding:14px; border-radius:40px; border:none; font-weight:bold;">💾 Save Changes</button>
+        <button id="closePopupBtn" style="background:#ccc; color:black; width:100%; padding:14px; border-radius:40px; border:none; margin-top:8px;">❌ Cancel</button>
+    </div>
+</div>
+
+<!-- CELEBRATION BALLOON -->
+<div id="celebrationBalloon" class="celebration-balloon" style="display:none;">
+    🎈🎉 <span id="celebrationMessage"></span> 🎉🎈
+    <span style="font-size:0.95rem; display:block; margin-top:8px; font-weight:normal;">✨ Tap to close ✨</span>
+</div>
+
+<script>
+    // ====================== GLOBAL STATE ======================
+    let customers = [];
+    let currentSearch = "";
+    let currentPage = 1;
+    const rowsPerPage = 15;
+    const STORAGE_KEY = "QueTeaLoyalty_V3";
+    const DELETE_PASSWORD = "queTea2025";
+
+    const generateId = () => Date.now() + '-' + Math.random().toString(36).substr(2, 8);
+
+    const saveToLocal = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
+
+    const getTotalDrinks = (c) => (c.batchCount * 20) + (c.currentCycleDrinks || 0);
+
+    function getRewardMessage(cycle) {
+        if (cycle === 5) return "🎉 Free Topping!";
+        if (cycle === 10) return "💰 Half Price!";
+        if (cycle === 15) return "🧁 Free Topping!";
+        if (cycle === 20) return "🥤 FREE DRINK!";
+        if (cycle < 5) return `${5-cycle} → Topping`;
+        if (cycle < 10) return `${10-cycle} → Half Price`;
+        if (cycle < 15) return `${15-cycle} → Topping`;
+        if (cycle < 20) return `${20-cycle} → Free Drink`;
+        return "✨ Maxed!";
+    }
+
+    // ====================== FILTER & SEARCH ======================
+    function filterCustomers(term) {
+        const clean = term.trim().toLowerCase();
+        if (!clean) return customers;
+        return customers.filter(c =>
+            (c.name || "").toLowerCase().includes(clean) ||
+            (c.mobile || "").includes(clean) ||
+            (c.comment || "").toLowerCase().includes(clean)
+        );
+    }
+
+    function performSearch() {
+        currentPage = 1;
+        currentSearch = document.getElementById("searchInput").value;
+        renderTable();
+    }
+
+    // ====================== DRINK & REDEEM ======================
+    function incrementDrink(id) {
+        const cust = customers.find(c => c.id === id);
+        if (!cust) return;
+
+        cust.currentCycleDrinks = (cust.currentCycleDrinks || 0) + 1;
+        if (cust.currentCycleDrinks > 20) {
+            cust.currentCycleDrinks = 1;
+            cust.batchCount = (cust.batchCount || 0) + 1;
+        }
+
+        cust.lastVisit = new Date().toISOString();
+        saveToLocal();
+
+        if ([5,10,15,20].includes(cust.currentCycleDrinks)) {
+            showCelebrationBalloon(cust.name, getRewardMessage(cust.currentCycleDrinks));
+        }
+
+        renderTable();
+    }
+
+    function redeemReward(id) {
+        const cust = customers.find(c => c.id === id);
+        if (!cust) return;
+
+        const cycle = cust.currentCycleDrinks || 0;
+        let reward = "";
+
+        if (cycle >= 20) reward = "FREE DRINK";
+        else if (cycle >= 15) reward = "Free Topping";
+        else if (cycle >= 10) reward = "Half Price";
+        else if (cycle >= 5) reward = "Free Topping";
+        else return alert("No reward available yet.");
+
+        if (confirm(`Redeem ${reward} for ${cust.name}?`)) {
+            const dateStr = new Date().toLocaleDateString('en-AU');
+            const note = `[${dateStr}] ${reward} redeemed`;
+
+            cust.comment = cust.comment ? `${note}\n${cust.comment}` : note;
+
+            if (cycle === 20) {
+                cust.currentCycleDrinks = 0;
+                cust.batchCount = (cust.batchCount || 0) + 1;
+            }
+
+            cust.lastVisit = new Date().toISOString();
+            saveToLocal();
+            renderTable();
+        }
+    }
+
+    // ====================== CELEBRATION ======================
+    function showCelebrationBalloon(name, reward) {
+        const balloon = document.getElementById("celebrationBalloon");
+        document.getElementById("celebrationMessage").innerHTML = `<strong>${name}</strong><br>got ${reward}!`;
+        balloon.style.display = "flex";
+        balloon.classList.remove("show");
+        void balloon.offsetWidth;
+        balloon.classList.add("show");
+
+        setTimeout(() => {
+            balloon.classList.remove("show");
+            setTimeout(() => balloon.style.display = "none", 400);
+        }, 3800);
+    }
+
+    document.getElementById("celebrationBalloon").addEventListener("click", () => {
+        const balloon = document.getElementById("celebrationBalloon");
+        balloon.classList.remove("show");
+        setTimeout(() => balloon.style.display = "none", 300);
+    });
+
+    // ====================== EDIT ======================
+    function openEditPopup(id) {
+        const cust = customers.find(c => c.id === id);
+        if (!cust) return;
+
+        document.getElementById("editCustId").value = cust.id;
+        document.getElementById("editName").value = cust.name;
+        document.getElementById("editMobile").value = cust.mobile;
+        document.getElementById("editComment").value = cust.comment || "";
+        document.getElementById("editCycleDrinks").value = cust.currentCycleDrinks;
+        document.getElementById("editBatchCount").value = cust.batchCount;
+
+        document.getElementById("editPopup").classList.add("active");
+    }
+
+    function saveEdit() {
+        const id = document.getElementById("editCustId").value;
+        const cust = customers.find(c => c.id === id);
+        if (!cust) return;
+
+        cust.name = document.getElementById("editName").value.trim() || "Unnamed";
+        cust.mobile = document.getElementById("editMobile").value.trim();
+        cust.comment = document.getElementById("editComment").value.trim();
+
+        let cycle = parseInt(document.getElementById("editCycleDrinks").value) || 0;
+        let batch = parseInt(document.getElementById("editBatchCount").value) || 0;
+
+        cust.currentCycleDrinks = Math.max(0, Math.min(20, cycle));
+        cust.batchCount = Math.max(0, batch);
+        cust.lastVisit = new Date().toISOString();
+
+        saveToLocal();
+        renderTable();
+        document.getElementById("editPopup").classList.remove("active");
+    }
+
+    // ====================== ADD & DELETE ======================
+    function addCustomer() {
+        const name = document.getElementById("newName").value.trim();
+        const mobile = document.getElementById("newMobile").value.trim();
+        const email = document.getElementById("newEmail").value.trim();
+
+        if (!name || !mobile) {
+            alert("Name and Mobile are required.");
+            return;
+        }
+
+        customers.unshift({
+            id: generateId(),
+            name,
+            mobile,
+            email: email || "",
+            comment: "",
+            currentCycleDrinks: 0,
+            batchCount: 0,
+            lastVisit: new Date().toISOString()
+        });
+
+        saveToLocal();
+        document.getElementById("newName").value = "";
+        document.getElementById("newMobile").value = "";
+        document.getElementById("newEmail").value = "";
+
+        performSearch();
+
+        // Auto-focus next customer
+        setTimeout(() => document.getElementById("newName").focus(), 100);
+    }
+
+    function handleDelete(id) {
+        const pwd = prompt("Enter delete password:");
+        if (pwd === DELETE_PASSWORD) {
+            if (confirm("Delete this customer permanently?")) {
+                customers = customers.filter(c => c.id !== id);
+                saveToLocal();
+                renderTable();
+            }
+        } else if (pwd !== null) {
+            alert("Wrong password.");
+        }
+    }
+
+    // ====================== RENDER ======================
+    function renderTable() {
+        const tbody = document.getElementById("tableBody");
+        const filtered = filterCustomers(currentSearch);
+
+        // Stats
+        document.getElementById("totalCustCount").innerText = customers.length;
+        document.getElementById("totalDrinksSum").innerText = customers.reduce((s, c) => s + getTotalDrinks(c), 0);
+        document.getElementById("totalBatchSum").innerText = customers.reduce((s, c) => s + (c.batchCount || 0), 0);
+
+        const totalPages = Math.ceil(filtered.length / rowsPerPage);
+        if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const paginated = filtered.slice(start, start + rowsPerPage);
+
+        tbody.innerHTML = "";
+
+        if (paginated.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" style="padding:40px;">No customers found.</td></tr>`;
+        } else {
+            paginated.forEach(c => {
+                const lastVisit = c.lastVisit ? new Date(c.lastVisit).toLocaleDateString('en-AU') : "—";
+                const isMilestone = [5,10,15,20].includes(c.currentCycleDrinks);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:600">${c.name}</td>
+                    <td>${c.mobile}</td>
+                    <td>${c.currentCycleDrinks}/20</td>
+                    <td>${c.batchCount || 0}</td>
+                    <td>${getTotalDrinks(c)}</td>
+                    <td style="font-weight:bold; color:${isMilestone ? '#d81b60' : '#555'}">${getRewardMessage(c.currentCycleDrinks)}</td>
+                    <td>${lastVisit}</td>
+                    <td style="max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${c.comment || ''}">${(c.comment || '-').substring(0,35)}</td>
+                    <td class="action-btns">
+                        <button class="drink-plus" data-id="${c.id}">+1</button>
+                        <button class="redeem-btn" data-id="${c.id}">🎁</button>
+                        <button class="edit-btn" data-id="${c.id}">✏️</button>
+                        <button class="delete-btn" data-id="${c.id}">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Event listeners
+        document.querySelectorAll('.drink-plus').forEach(b => b.onclick = () => incrementDrink(b.dataset.id));
+        document.querySelectorAll('.redeem-btn').forEach(b => b.onclick = () => redeemReward(b.dataset.id));
+        document.querySelectorAll('.edit-btn').forEach(b => b.onclick = () => openEditPopup(b.dataset.id));
+        document.querySelectorAll('.delete-btn').forEach(b => b.onclick = () => handleDelete(b.dataset.id));
+
+        // Pagination
+        const controls = document.getElementById("paginationControls");
+        if (totalPages <= 1) {
+            controls.innerHTML = "";
+            return;
+        }
+        controls.innerHTML = `
+            <button onclick="changePage(-1)" ${currentPage===1?'disabled':''}>◀ Prev</button>
+            <span style="font-weight:bold; margin:0 15px;">Page ${currentPage} of ${totalPages}</span>
+            <button onclick="changePage(1)" ${currentPage===totalPages?'disabled':''}>Next ▶</button>
+        `;
+    }
+
+    window.changePage = (step) => {
+        currentPage += step;
+        renderTable();
+    };
+
+    // ====================== BACKUP / EXPORT ======================
+    function backupData() {
+        const dataStr = JSON.stringify(customers, null, 2);
+        const blob = new Blob([dataStr], {type: "application/json"});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `QueTea_Backup_${new Date().toISOString().slice(0,19)}.json`;
+        a.click();
+    }
+
+    function exportToCSV() {
+        let csv = "Name,Mobile,Email,TotalDrinks,Batch,Cycle,LastVisit,Notes\n";
+        customers.forEach(c => {
+            const notes = (c.comment || "").replace(/"/g, '""').replace(/\n/g, ' | ');
+            csv += `"${c.name}","${c.mobile}","${c.email || ''}",${getTotalDrinks(c)},${c.batchCount || 0},${c.currentCycleDrinks},"${c.lastVisit || ''}","${notes}"\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `QueTea_Customers_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+    }
+
+    function importData(file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            try {
+                const imported = JSON.parse(e.target.result);
+                if (Array.isArray(imported)) {
+                    customers = imported.map(c => ({
+                        ...c,
+                        id: c.id || generateId(),
+                        lastVisit: c.lastVisit || new Date().toISOString(),
+                        comment: c.comment || "",
+                        currentCycleDrinks: c.currentCycleDrinks ?? 0,
+                        batchCount: c.batchCount ?? 0
+                    }));
+                    saveToLocal();
+                    renderTable();
+                    alert("✅ Import successful!");
+                }
+            } catch (err) {
+                alert("Invalid backup file.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // ====================== INIT ======================
+    document.addEventListener("DOMContentLoaded", () => {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            customers = JSON.parse(stored);
+        } else {
+            // Demo data
+            customers = [
+                { id: generateId(), name: "Emma Watson", mobile: "0412345678", email: "", comment: "loves matcha", currentCycleDrinks: 4, batchCount: 0, lastVisit: new Date().toISOString() },
+                { id: generateId(), name: "Liam Chen", mobile: "0422334455", email: "", comment: "", currentCycleDrinks: 9, batchCount: 0, lastVisit: new Date().toISOString() },
+                { id: generateId(), name: "Sophia Rossi", mobile: "0433778899", email: "", comment: "birthday month", currentCycleDrinks: 14, batchCount: 0, lastVisit: new Date().toISOString() },
+            ];
+            saveToLocal();
+        }
+
+        renderTable();
+
+        // Event Listeners
+        document.getElementById("searchInput").addEventListener("input", () => {
+            clearTimeout(window.searchTimer);
+            window.searchTimer = setTimeout(performSearch, 250);
+        });
+
+        document.getElementById("clearSearchBtn").addEventListener("click", () => {
+            document.getElementById("searchInput").value = "";
+            performSearch();
+        });
+
+        document.getElementById("addCustomerBtn").addEventListener("click", addCustomer);
+
+        // Enter key support
+        document.querySelectorAll('.new-customer-form input').forEach(input => {
+            input.addEventListener("keypress", e => {
+                if (e.key === "Enter") addCustomer();
+            });
+        });
+
+        document.getElementById("backupDataBtn").addEventListener("click", backupData);
+        document.getElementById("exportCSVBtn").addEventListener("click", exportToCSV);
+        document.getElementById("importDataBtn").addEventListener("click", () => document.getElementById("importFileInput").click());
+        document.getElementById("importFileInput").addEventListener("change", e => {
+            if (e.target.files[0]) importData(e.target.files[0]);
+            e.target.value = "";
+        });
+
+        document.getElementById("saveEditBtn").addEventListener("click", saveEdit);
+        document.getElementById("closePopupBtn").addEventListener("click", () => document.getElementById("editPopup").classList.remove("active"));
+    });
+</script>
+</body>
+</html>
